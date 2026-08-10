@@ -1,5 +1,5 @@
 # Access-controlled PPMI data — never commit
-data/
-saved_data/
-*.pkl
-*.xlsx
+# data/
+# saved_data/
+# *.pkl
+# *.xlsx
