@@ -101,7 +101,7 @@ The Part III table carries the `PDSTATE` and `DBSYN` fields used for ON/OFF medi
 
 ### Note on `MODSEADL`
 
-The `MODSEADL` item is not used as a model feature and is dropped downstream. However, the file is required for the pre/post-DBS analysis and must be present.
+The `MODSEADL` item is not used as a model feature and is dropped downstream.
 
 ### Note on folder naming
 
