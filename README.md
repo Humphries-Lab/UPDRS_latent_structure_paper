@@ -51,7 +51,6 @@ These scripts prepare the datasets used throughout the dimensionality reduction 
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `1_save_patient_data_all_2025_version.py`                        | Loads the complete PPMI dataset and saves processed patient data.                               |
 | `2_normalize_and_categorize_data.py`                             | Creates the baseline dataset, removes incomplete observations, and performs rank normalization. |
-           |
 
 ---
 
