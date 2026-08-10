@@ -2,7 +2,7 @@ The complete pipeline used to construct, validate, and analyse low-dimensional r
 
 The primary objective is to identify the intrinsic low-dimensional structure of Parkinson's disease symptoms using **Spectral Estimation (SE)** and to evaluate the stability, interpretability, and generalisability of the resulting symptom spaces. 
 
-We supply here the code for use on data downloaded from the PPMI repository. PPMI's Data Use Agreement forbids sharing of participant data in any form.
+We supply here the code for use on data downloaded from the [PPMI repository](https://www.ppmi-info.org/), to abide by PPMI's Data Use Agreement.
 
 We provide our discovered "baseline space" of the MDS-UPDRS as the eigenvectors in saved_data/baseline_space.pkl. 
 
