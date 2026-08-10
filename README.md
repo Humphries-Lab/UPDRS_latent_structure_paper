@@ -1,8 +1,10 @@
-# Dimensionality Reduction
+The complete pipeline used to construct, validate, and analyse low-dimensional representations of MDS-UPDRS symptom data from the Parkinson's Progression Markers Initiative (PPMI) cohort.
 
-This folder contains the complete pipeline used to construct, validate, and analyse low-dimensional representations of MDS-UPDRS symptom data from the Parkinson's Progression Markers Initiative (PPMI) cohort.
+The primary objective is to identify the intrinsic low-dimensional structure of Parkinson's disease symptoms using **Spectral Estimation (SE)** and to evaluate the stability, interpretability, and generalisability of the resulting symptom spaces. 
 
-The primary objective is to identify the intrinsic low-dimensional structure of Parkinson's disease symptoms using **Spectral Estimation (SE)** and to evaluate the stability, interpretability, and generalisability of the resulting symptom spaces. These spaces are subsequently used for disease progression analyses and downstream prediction tasks.
+We supply here the code for use on data downloaded from the PPMI repository. PPMI's Data Use Agreement forbids sharing of participant data in any form.
+
+We provide our discovered "baseline space" of the MDS-UPDRS as the eigenvectors in saved_data/baseline_space.pkl. 
 
 ---
 
@@ -49,8 +51,7 @@ These scripts prepare the datasets used throughout the dimensionality reduction 
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `1_save_patient_data_all_2025_version.py`                        | Loads the complete PPMI dataset and saves processed patient data.                               |
 | `2_normalize_and_categorize_data.py`                             | Creates the baseline dataset, removes incomplete observations, and performs rank normalization. |
-| `2_normalize_and_categorize_data_earliest_ON_or_OFF_separate.py` | Creates earliest ON and earliest OFF medication-state datasets. This generates entire MDS-UPDRS I, II and III data with MDS UPDRS III either in ON or OFF medication state.                                 |
-| `2_normalize_and_categorize_data_earliest_UPDRS_I_II.py`         | Creates the earliest UPDRS I/II dataset for separate analysis. These are UPDRS I_II data from the earliest visit when the patient has medication state data available. In contrast , during Baseline assessment, the patient has no medication.                |
+           |
 
 ---
 
@@ -60,10 +61,7 @@ These scripts estimate symptom spaces using Spectral Estimation. All spectral-es
 
 | Script                                       | Description                                                                                  |
 | -------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `3_build_low_D_space_using_SE.py`            | Constructs the baseline low-dimensional space using all baseline symptom scores.             |
-| `3_build_low_D_ON_or_OFF_space_using_SE.py`  | Constructs medication-state-specific low-dimensional spaces from complete MDS UPDRS (I,II and the III(ON or OFF)) using earliest ON or OFF visits. |
-| `3_build_low_D_space_using_SE_UPDRS_III.py`  | MDS UPDRS III space: Constructs medication-state-specific low-dimensional spaces using earliest ON or OFF visits of MDS UPDRS III. |
-| `3_build_low_D_space_using_SE_UPDRS_I_II.py` | MDS UPDRS I_II space: Constructs a low-dimensional space using only UPDRS I and II symptom scores.                 |
+| `3_build_low_D_space_using_SE.py`            | Constructs the baseline low-dimensional space using all baseline symptom scores.             |             |
 
 ---
 
@@ -101,7 +99,6 @@ These scripts evaluate whether the learned spaces generalise beyond the baseline
 | `5_compare_genetic_BL_spaces.py`                        | Compares sporadic and genetic cohort spaces.                      |
 | `5_how_good_is_BL_space_on_genetic_cohort.py`           | Tests baseline space reconstruction on the genetic cohort.        |
 | `5_how_good_is_BL_space_on_later_data_all_visits.py`    | Tests baseline space reconstruction on longitudinal visits.       |
-| `5_how_good_is_ON_OFF_updrs_iii_space_on_later_data.py` | Tests medication-state-specific UPDRS III spaces on later visits. |
 
 ---
 
@@ -119,37 +116,9 @@ These scripts project longitudinal patient trajectories into the learned symptom
 
 ---
 
-## 7. Supplementary and exploratory scripts
 
-These scripts support exploratory analysis, alternative decompositions, and additional progression/loading visualisations. They are not required for the core pipeline.
 
-| Script                                       | Description                                                                          |
-| -------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `7_PCA_SVD_EVD.py`                           | Compares PCA / SVD / EVD decompositions of the symptom data (exploratory).           |
-| `7_progression_individual.py`               | Projects and plots individual patient progression trajectories.                      |
-| `7_progression_individual_dimension_wise.py`| Plots individual patient progression separately along each low-dimensional axis.     |
-| `7_distribution_of_symptom_loadings.py`     | Plots the distribution of symptom loadings across the low-dimensional dimensions.    |
-
----
-
-## 8. ON → OFF prediction (medication-state analysis)
-
-These scripts test whether a patient's OFF-state UPDRS III scores can be predicted from their ON-state scores at the same visit, and whether the low-dimensional spaces help or hurt that prediction. They form a self-contained strand built on top of the low-D spaces; run `8b` first, then `8c` / `8d`. (`8a` is an earlier reconstruction-based version, kept for reference.)
-
-| Script                                          | Description                                                                                                                                                                       |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `8a_predict_OFF_from_ON_data.py`                | Reconstruction approach: for each paired visit, projects ON UPDRS III into a low-D space and reconstructs it, comparing against the true OFF scores, across the ON, OFF and baseline spaces plus an identity reference. Superseded by the supervised scripts below. |
-| `8b_save_all_ON_OFF_pairwise_from_all_visits.py`| Builds the paired dataset: every visit where a patient has both an ON and an OFF UPDRS III record (matched on `PATNO` + `EVENT_ID`), giving `X = ON scores`, `y = OFF scores`. Saves raw and rank-normalised versions. |
-| `8c_supervised_OFF_from_ON.py`                  | Trains a multi-output regression to predict OFF from ON on the full 34 UPDRS III features, using patient-grouped cross-validation, compared against the identity baseline (predict OFF = ON). |
-| `8d_supervised_OFF_from_ON_lowD_version.py`     | Repeats the supervised prediction using low-dimensional representations, comparing two formulations (low-D input → full output; and low-D input → low-D output → reconstructed) across the ON, OFF and baseline spaces, against the raw-feature and identity baselines. |
-
-> **Cross-validation.** Because a patient contributes multiple visits, `8c`/`8d` split by patient (`GroupKFold` on `PATNO`) so no patient appears in both train and test.
->
-> **Finding.** A supervised model on the full 34-feature ON data modestly beats the identity baseline, but the low-dimensional representations underperform the full data for this task — compression discards the fine-grained ON↔OFF differences the prediction relies on. The low-D spaces remain appropriate for their primary purpose (describing symptom structure); they are simply not the right tool for reconstructing ON↔OFF differences.
->
-> **Baseline space caveat.** The baseline space spans the full UPDRS I+II+III feature set, whereas the paired dataset is UPDRS III only, so `8d` skips the baseline space automatically. Including it would require `8b` to also save the paired UPDRS I/II columns.
-
-## 9. Helper modules
+## 7. Helper modules
 
 | Module                          | Purpose                                                                                              |
 | ------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -227,13 +196,8 @@ The recommended execution order is:
 1_save_patient_data_all_2025_version.py
 
 2_normalize_and_categorize_data.py
-2_normalize_and_categorize_data_earliest_ON_or_OFF_separate.py
-2_normalize_and_categorize_data_earliest_UPDRS_I_II.py
 
 3_build_low_D_space_using_SE.py
-3_build_low_D_ON_or_OFF_space_using_SE.py
-3_build_low_D_space_using_SE_UPDRS_III.py
-3_build_low_D_space_using_SE_UPDRS_I_II.py
 
 3_leave_one_out_performance_compared_to_random.py
 3_test_train_performance.py
@@ -250,13 +214,6 @@ The recommended execution order is:
 6_var_across_all_6_dims.py
 6_var_across_all_6_dims_plot.py
 
-
-Optional ON → OFF prediction analysis (run 8b first):
-
-8b_save_all_ON_OFF_pairwise_from_all_visits.py
-8c_supervised_OFF_from_ON.py
-8d_supervised_OFF_from_ON_lowD_version.py
-```
 
 ---
 
