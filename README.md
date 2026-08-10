@@ -199,13 +199,16 @@ The recommended execution order is:
 3_build_low_D_space_using_SE.py
 
 3_leave_one_out_performance_compared_to_random.py
+3_plot_LOO_with_random_and_stats.py
 3_test_train_performance.py
+3_plot_test_train_with_random_and_stats.py  
+
 4_N_fold_data_subspace_creation_final.py
+4_N_fold_data_subspace_plot.py
 
 5_compare_genetic_BL_spaces.py
 5_how_good_is_BL_space_on_genetic_cohort.py
 5_how_good_is_BL_space_on_later_data_all_visits.py
-5_how_good_is_ON_OFF_updrs_iii_space_on_later_data.py
 
 6_save_progression.py
 6_self_defined_space.py
